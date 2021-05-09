@@ -1,0 +1,16 @@
+
+py/src/MIDIFile.egg-info/
+
+py/src/MIDI/__pycache__/
+
+py/src/PL/__pycache__/
+
+py/.project
+
+py/.pydevproject
+
+.project
+
+py/bin/
+
+swift/
