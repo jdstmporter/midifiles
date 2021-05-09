@@ -12,8 +12,22 @@ class MIDIFile(object):
     def __init__(self,filename):
         with open(filename,mode='rb') as file:
             self.bytes=file.read()
-        self.header=MIDI.chunks.Header()
+        self.header=None
         self.tracks=[]
+        
+    def readHeader(self):
+        if len(self.bytes)<14:
+            return False
+        buffer=self.bytes[0:14]
+        header=buffer[0:4].decode()
+        length=Base.build(buffer[4:8])
+        if header=='MThd' : # header
+            if length != 6:
+                return False
+            self.header = MIDI.chunks.Header(buffer[8:8+length])
+            return True
+        return False
+        
         
     def parse(self):
         buffer=self.bytes

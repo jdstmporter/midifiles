@@ -15,6 +15,23 @@ class PLFile(object):
         self.header=None
         self.tracks=[]
         
+    def readHeader(self):
+        try:
+            if len(self.bytes)<14:
+                raise Exception('FLP file requires at least 14 bytes')
+            buffer=self.bytes[0:14]
+            header=buffer[0:4].decode()
+            length=Base.getInt32(buffer[4:8])
+            if header=='FLhd' : # header
+                if length != 6:
+                    raise Exception('Header chunk must have length 6')
+                self.header = PL.chunks.Header(buffer[8:])
+                return True
+            else:
+                return False
+        except:
+            return False
+        
     def parse(self):
         buffer=self.bytes
         while len(buffer)>8:

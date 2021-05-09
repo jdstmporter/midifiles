@@ -30,6 +30,8 @@ Methods
 
     .. list-table::
 
+        * - **MIDI.MIDIFile**.readHeader(*self*)
+          - Determine whether the file starts with a MIDI header; returns **True** if it does, **False** otherwise.
         * - **MIDI.MIDIFile**.parse(*self*)
           - Parse the file.  Determines the file's type and populates an array of content tracks, each of which contains one track from the file and is represented by a **MIDI.Track** instance.
         * - **MIDI.MIDIFile**.__len__(*self*)
