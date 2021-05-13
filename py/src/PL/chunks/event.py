@@ -5,7 +5,8 @@ Created on 15 Sep 2019
 '''
 
 from PL.base import Base
-from PL.messagetypes import messageType 
+from PL.messagetypes import messageType, UnknownMessage 
+
 
 def printable(c):
     if c>30 and c<128 : return chr(c)
@@ -25,7 +26,7 @@ class Event(Base):
             self.name = self.message.name
             #print(f'Message and name are {self.message} & {self.name}')
         except:
-            self.message = None
+            self.message = UnknownMessage.Unknown
             self.name = 'Unknown'
             #print(f'Message and name are {self.message} & {self.name}')
         
@@ -44,8 +45,10 @@ class Event(Base):
         return self.length
     
     def value(self):
-        if self.isNumeric: return self.data
-        return ''.join([printable(x) for x in self.data])
+            return self.message.asString(self.data)
+        
+        
+        
     
     def __str__(self):
         return f'{self.code} {self.header}({self.name}) = {self.value()}'

@@ -1,6 +1,7 @@
-from .core import BaseMessage  
+from .core import BaseMessage 
+from PL.messages.converters import BYTEConv 
 
-class Int8Message(BaseMessage):
+class BYTE(BaseMessage):
     
     ChannelEnabled = 0
     NoteOn = 1
@@ -10,6 +11,7 @@ class Int8Message(BaseMessage):
     MIDINote = 5
     MIDIPatch = 6
     MIDIBank = 7
+    # 8 does not exist
     LoopActive = 9
     ShowInfo = 10
     Shuffle = 11
@@ -35,6 +37,19 @@ class Int8Message(BaseMessage):
     EEAutoMode = 31
     
     @classmethod
+    def allObsolete(cls):
+        return [BYTE.ChannelVolume,
+                BYTE.ChannelPan,
+                BYTE.MainVolume,
+                BYTE.FitToSteps,
+                BYTE.Pitchable,
+                BYTE.DelayFlags,
+                BYTE.NStepsShown]
+    
+    @classmethod
     def payloadLength(cls):
         return 1
+    
+    def getConverter(self):
+        return BYTEConv
     

@@ -1,10 +1,10 @@
-from .core import BaseMessage,BadMessage
-from .int8messages import Int8Message
-from .int16messages import Int16Message
-from .int32messages import Int32Message
-from .textmessages import TextMessage 
+from .core import BaseMessage,UnknownMessage
+from .int8messages import BYTE
+from .int16messages import WORD
+from .int32messages import DWORD
+from .textmessages import VAR 
 
-MessageTypes = [Int8Message,Int16Message,Int32Message,TextMessage]
+MessageTypes = [BYTE,WORD,DWORD,VAR]
 PayloadLengths = [1,2,4,-1]
 
 from PL.base import PLParserError

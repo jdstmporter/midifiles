@@ -5,10 +5,9 @@ Created on 9 May 2021
 '''
 
 from enum import Enum
-
+from PL.messages.converters import STR8Conv, SAFEConv
 
     
-
 
 class BaseMessage(Enum):
     
@@ -29,11 +28,29 @@ class BaseMessage(Enum):
         return None
     
     
+    @classmethod
+    def allObsolete(cls):
+        return []
+    
+    def isObsolete(self):
+        return self in cls.allObsolete()
  
+    def getConverter(self):
+        return STR8Conv
     
-class BadMessage(BaseMessage):
+    def asString(self,value):
+        converter = self.getConverter()
+        return converter(value)
     
-    BadMessage = 0
+
+class UnknownMessage(BaseMessage):
+    
+    Unknown = 0
+    
+    def getConverter(self):
+        return SAFEConv
+    
+    
     
 
 

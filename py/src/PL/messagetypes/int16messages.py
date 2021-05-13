@@ -4,8 +4,9 @@ Created on 9 May 2021
 @author: julianporter
 '''
 from .core import BaseMessage
+from PL.messages.converters import WORDConv 
 
-class Int16Message(BaseMessage):
+class WORD(BaseMessage):
     
     NewChan      =64
     NewPat       =64+1      
@@ -27,7 +28,7 @@ class Int16Message(BaseMessage):
     RandChan     =64+17
     MixChan      =64+18
     Resonance    =64+19
-    LoopBar      =64+20
+    OldSongLoopPos      =64+20
     StDel        =64+21
     FX3          =64+22
     DotReso      =64+23
@@ -36,7 +37,23 @@ class Int16Message(BaseMessage):
     LoopEndBar    =64+26
     Dot          =64+27
     DotShift     =64+28
+    TempoFine    =64+29
+    LayerChan   =64+30
+    FXIcon       =64+31
+    DotRel       =63+32
+    SwingMix     =63+33
+    
+    @classmethod
+    def allObsolete(cls):
+        return [WORD.Tempo,
+                WORD.RandChan,
+                WORD.MixChan,
+                WORD.OldSongLoopPos,
+                WORD.TempoFine]
     
     @classmethod
     def payloadLength(cls):
         return 2
+    
+    def getConverter(self):
+        return WORDConv

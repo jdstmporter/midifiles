@@ -5,3 +5,5 @@ py/src/MIDIFile.egg-info/
 py/bin/
 swift/
 __pycache__/
+
+py/data/test2.flp

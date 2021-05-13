@@ -4,14 +4,16 @@ Created on 9 May 2021
 @author: julianporter
 '''
 from .core import BaseMessage
+from PL.messages.converters import DWORDConv
 
-class Int32Message(BaseMessage):
+class DWORD(BaseMessage):
     Color        =128
     PlayListItem   =129          # +Pos (word) +PatNum (word)
     Echo         =130
     FXSine       =131
     CutCutBy     =132
     WindowH      =133
+    # 134 does not exist
     MiddleNote    =135
     Reserved      =136            # may contain an invalid version info
     MainResoCutOff    =137
@@ -36,5 +38,16 @@ class Int32Message(BaseMessage):
     FineTempo        =156
 
     @classmethod
+    def allObsolete(cls):
+        return [DWORD.PlayListItem,
+                DWORD.MainResoCutOff,
+                DWORD.SSNote,
+                DWORD.PatAutoMode] 
+
+    @classmethod
     def payloadLength(cls):
         return 4
+    
+    def getConverter(self):
+        return DWORDConv
+    
