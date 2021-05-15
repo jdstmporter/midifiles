@@ -1,6 +1,6 @@
 from .numeric import HexConverter,IntConverter
 from .text import String8Converter,String16Converter
-from .base import Converter
+from .base import Converter 
 
    
 

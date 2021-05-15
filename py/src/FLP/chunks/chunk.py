@@ -3,9 +3,9 @@ Created on 8 May 2021
 
 @author: julianporter
 '''
-from PL.base import Base
+from FLP.base import FLPBase
 
-class Chunk(Base):
+class FLPChunk(FLPBase):
     
     def __init__(self,data=b''):
         super().__init__()

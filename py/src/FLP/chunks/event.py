@@ -4,15 +4,15 @@ Created on 15 Sep 2019
 @author: julianporter
 '''
 
-from PL.base import Base
-from PL.messagetypes import messageType, UnknownMessage 
+from FLP.base import FLPBase
+from FLP.messagetypes import messageType, UnknownMessage 
 
 
 def printable(c):
     if c>30 and c<128 : return chr(c)
     return '.'
 
-class Event(Base):
+class Event(FLPBase):
     
     def __init__(self,buffer):
         super().__init__(buffer[1:])
@@ -26,7 +26,7 @@ class Event(Base):
             self.name = self.message.name
             #print(f'Message and name are {self.message} & {self.name}')
         except:
-            self.message = UnknownMessage.Unknown
+            self.message = UnknownMessage.Unknown 
             self.name = 'Unknown'
             #print(f'Message and name are {self.message} & {self.name}')
         

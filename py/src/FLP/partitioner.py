@@ -4,10 +4,10 @@ Created on 8 May 2021
 @author: julianporter
 '''
 
-import PL.chunks 
-from PL.base import Base 
+from FLP.chunks import FLPHeader,FLPTrack 
+from FLP.base import FLPBase 
          
-class PLFile(object):
+class FLPFile(object):
     
     def __init__(self,filename):
         with open(filename,mode='rb') as file:
@@ -21,11 +21,11 @@ class PLFile(object):
                 raise Exception('FLP file requires at least 14 bytes')
             buffer=self.bytes[0:14]
             header=buffer[0:4].decode()
-            length=Base.getInt32(buffer[4:8])
+            length=FLPBase.getInt32(buffer[4:8])
             if header=='FLhd' : # header
                 if length != 6:
                     raise Exception('Header chunk must have length 6')
-                self.header = PL.chunks.Header(buffer[8:])
+                self.header = FLPHeader(buffer[8:])
                 return True
             else:
                 return False
@@ -37,16 +37,16 @@ class PLFile(object):
         while len(buffer)>8:
             
             header=buffer[0:4].decode()
-            length=Base.getInt32(buffer[4:8])
+            length=FLPBase.getInt32(buffer[4:8])
             if header=='FLhd' : # header
                 if length != 6:
                     raise Exception(f'Header chunk must have length 6 : got {hex(length)}')
                 
-                self.header = PL.chunks.Header(buffer[8:])
+                self.header = FLPHeader(buffer[8:])
                 print(f"Header is {self.header}")
                 
             elif header=='FLdt' : # track
-                self.tracks.append(PL.chunks.Track(buffer[8:]))
+                self.tracks.append(FLPTrack(buffer[8:]))
             else:
                 print(f'Unknown chunk type {header} - skipping')
             buffer = buffer[8+length:]

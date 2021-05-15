@@ -5,28 +5,25 @@ Created on 9 May 2021
 '''
 from .core import BaseMessage
 from enum import Enum
-from PL.messages.converters import HEXConv,STR8Conv,STR16Conv
+from FLP.messages.converters import HEXConv,STR8Conv,STR16Conv
 
 class Display(Enum):
     
-    CSTRING = 1
-    STRING16 = 2
+    UTF8 = 1
+    UTF16 = 2
     HEX = 3
     RAW = 4
     RTF = 5
     
     
-displays = {
-        Display.HEX: [208,209,212,219,221,226,227,229,237],
-        Display.CSTRING: [199],
-        Display.STRING16 : [194,195,197,200,201,202,203,204,205,206,207,230,231,239]
-    }
+    def converter(self):
+        if self==Display.HEX: return HEXConv
+        elif self==Display.UTF8: return STR8Conv
+        elif self==Display.UTF16: return STR16Conv
+        else: return STR8Conv
+    
 
-converters = {
-        Display.HEX: HEXConv,
-        Display.CSTRING: STR8Conv,
-        Display.STRING16 : STR16Conv
-    }
+
 
 class VAR(BaseMessage):
     
@@ -83,10 +80,15 @@ class VAR(BaseMessage):
     
     
     def getConverter(self):
+        v=self.value
         display=Display.RAW
-        for k, v in displays.items():
-            if self.value in v: display=k
-        return converters.get(display,STR8Conv)
+        if v in [208,209,212,219,221,226,227,229,237]:
+            display=Display.HEX
+        elif v in [199]:
+            display=Display.UTF8
+        elif v in [194,195,197,200,201,202,203,204,205,206,207,230,231,239]:
+            display=Display.UTF16
+        return display.converter()
     
        
     

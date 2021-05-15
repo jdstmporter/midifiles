@@ -9,7 +9,7 @@ from .event import Event
 import traceback
            
 
-class Track(Chunk):
+class FLPTrack(Chunk):
     
     def __init__(self,data):
         super().__init__(data)
@@ -17,20 +17,10 @@ class Track(Chunk):
            
     def parse(self):
         self.buffer=self.data
-        #self.buffer=self.buffer[8:]
         try:
             while len(self.buffer)>0 :
-                #print(f'Parsing {len(self.buffer)} bytes')
-                #print(f'Time is {time} length {n}')
-                #eventType=self.buffer[0]
-                #print(f'Next event type {eventType}')
                 event=Event(self.buffer)
-                #if eventType <192 :     
-                #    event = NumericEvent(self.buffer)
-                #else: # 
-                #    event = TextEvent(self.buffer)
                 length = len(event)
-                #print(f"Event type {hex(eventType)} is of kind {event.code}")
                 self.events.append(event)
                 self.buffer=self.buffer[length:]
         except Exception as e:

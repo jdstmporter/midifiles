@@ -7,19 +7,19 @@ from .textmessages import VAR
 MessageTypes = [BYTE,WORD,DWORD,VAR]
 PayloadLengths = [1,2,4,-1]
 
-from PL.base import PLParserError
+from FLP.base import FLPParserError
 
 def payloadLength(idx):
     try:
         return PayloadLengths[idx//64]
     except:
-        raise PLParserError(f'Received bad event index {idx}')
+        raise FLPParserError(f'Received bad event index {idx}')
 
 def messageType(idx):
     try:
         return MessageTypes[idx//64]
     except:
-        raise PLParserError(f'Received bad event index {idx}')  
+        raise FLPParserError(f'Received bad event index {idx}')  
     
 def isNumeric(idx):
     return payloadLength(idx)>0

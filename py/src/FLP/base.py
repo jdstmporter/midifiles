@@ -4,7 +4,7 @@ Created on 8 May 2021
 @author: julianporter
 '''
 
-class PLParserError(Exception):
+class FLPParserError(Exception):
     
     def __init__(self,*args,**kwargs):
         self.extras=kwargs
@@ -33,7 +33,7 @@ class PLParserError(Exception):
     
         
 
-class Base(object):
+class FLPBase(object):
     
     @classmethod
     def stringify(cls,array=[],separator=' '):

@@ -5,7 +5,7 @@ Created on 9 May 2021
 '''
 
 from enum import Enum
-from PL.messages.converters import STR8Conv, SAFEConv
+from FLP.messages.converters import STR8Conv, SAFEConv
 
     
 
@@ -33,7 +33,7 @@ class BaseMessage(Enum):
         return []
     
     def isObsolete(self):
-        return self in cls.allObsolete()
+        return self in self.allObsolete()
  
     def getConverter(self):
         return STR8Conv

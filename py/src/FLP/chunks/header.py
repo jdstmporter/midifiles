@@ -3,16 +3,16 @@ Created on 8 May 2021
 
 @author: julianporter
 '''
-from .chunk import Chunk 
+from .chunk import FLPChunk  
 
-class Header(Chunk):
+class FLPHeader(FLPChunk):
 
     def __init__(self,data=b''):
         super().__init__(data)
         try:
-            self.format = Chunk.getInt16(self.data[0:2])
-            self.nTracks = Chunk.getInt16(self.data[2:4])
-            self.division = Chunk.getInt16(self.data[4:6])
+            self.format = FLPChunk.getInt16(self.data[0:2])
+            self.nTracks = FLPChunk.getInt16(self.data[2:4])
+            self.division = FLPChunk.getInt16(self.data[4:6])
         except:
             self.format = 0
             self.nTracks = 0
