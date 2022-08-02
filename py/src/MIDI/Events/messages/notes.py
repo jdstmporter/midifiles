@@ -12,7 +12,7 @@ class Note(object):
     
     def _fromNumber(self,n):
         number=n&0xff
-        self.note=self.notes[number % 12]
+        self.note=number % 12
         self.octave=number//12
         
     def _fromString(self,s):
@@ -48,7 +48,7 @@ class Note(object):
         return self.note+self.octave*12
     
     def __str__(self):
-        return f'{self.note.upper()}{self.octave}'
+        return f'{self.notes[self.note].upper()}{self.octave}'
     
 class NoteMessage(object):
     
