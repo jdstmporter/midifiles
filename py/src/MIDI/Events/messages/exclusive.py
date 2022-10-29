@@ -6,8 +6,20 @@ Created on 16 Sep 2019
 from MIDI.util import SafeEnum
 from .converters import ConversionEnum, Converter
 
+class SMTPEType(SafeEnum):
+    FPS24 = 0
+    FPS25 = 1
+    FPS30Drop = 2
+    FPS30 = 3
+
+    @property
+    def fps(self):
+        c = SMTPEType
+        return { c.FPS24 : 24, c.FPS25 : 25, c.FPS30Drop : 30, c.FPS30 : 30 }.get(self,30)
+
+
 class TimeCodeMessages(SafeEnum):
-    
+
     Frame_Number_LSB = 0x00
     Frame_Number_MSB = 0x10
     Second_LSB = 0x20
@@ -19,12 +31,20 @@ class TimeCodeMessages(SafeEnum):
 
 def TimeCode(data):
     x = data[0]
+    value = x & 0x1f
     kind = TimeCodeMessages(x&0x70)
-    return f'Type: {str(kind)} value: {x&15}'
-    
+    if kind == TimeCodeMessages.Rate_And_Hour_MSB:
+        smtpe = SMTPEType((x>>5)&3)
+        return f'Type: Hour_MSB value: {value} SMTPE : {str(smtpe)}'
+    else:
+        return f'Type: {str(kind)} value: {value}'
+
+
+
+
 
 class SystemMessages(ConversionEnum):
-    
+
     Exclusive = 0
     Time_Code_Quarter_Frame = (1,TimeCode)
     Song_Position_Pointer = (2,Converter.Int16)
@@ -37,10 +57,10 @@ class SystemMessages(ConversionEnum):
     RT_Stop = (12,Converter.Null)
     RT_Active_Sensing = (14,Converter.Null)
     RT_Reset = (15,Converter.Null)
-    
+
     def length(self):
         cls=self.__class__
-        if self == cls.Exclusive: 
+        if self == cls.Exclusive:
             return None
         elif self in [cls.Time_Code_Quarter_Frame,cls.Song_Select]:
             return 1
@@ -50,9 +70,9 @@ class SystemMessages(ConversionEnum):
             return 0
 
 class SystemMessage(object):
-    
+
     def __init__(self,data=b''):
-        
+
         command=SystemMessages.make(data[0]&15)
         if command:
             self.command=command
@@ -62,13 +82,13 @@ class SystemMessage(object):
             self.command=data[0]
             self.value=data[1:]
             self.length=len(data)-1
-            
+
     def __len__(self):
         return self.length
-            
+
     def __str__(self):
         if self.value is not None:
             return f'{str(self.command)} := {self.value}'
         else:
             return str(self.command)
-        
+
