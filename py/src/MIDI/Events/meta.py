@@ -9,7 +9,7 @@ from .event import Event
 from MIDI.util import SafeEnum
 
 class MetaEventKinds(SafeEnum):
-    
+
     Sequence_Number = 0
     Text = 1
     Copyright_Notice = 2
@@ -25,15 +25,15 @@ class MetaEventKinds(SafeEnum):
     Time_Signature = 0x58
     Key_Signature = 0x59
     Sequencer_Specific = 0x7f
-    
+
     def key(self,n):
         if n>=0:
             return ['C','G','D','A','E','B','F#','C#'][n]
         else:
             return ['C','F','Bb','Eb','Ab','Db','Gb','Cb'][-n]
-    
-    
-    
+
+
+
     def attributes(self,_bytes=b''):
         cls=self.__class__
         if self in [cls.Text,cls.Copyright_Notice,cls.Track_Name,cls.Instrument_Name,cls.Lyric,cls.Marker,cls.Cue_Point]:
@@ -45,7 +45,9 @@ class MetaEventKinds(SafeEnum):
         elif self==cls.End_Of_Track:
             return OrderedDict()
         elif self==cls.Set_Tempo:
-            return OrderedDict(tempo = Event.build(_bytes[:3])*120/500000)
+            microsecondsPerCrotchet=Event.build(_bytes[:3])
+            crotchetsPerMinute=60000000/microsecondsPerCrotchet
+            return OrderedDict(tempo = microsecondsPerCrotchet, bpm = crotchetsPerMinute)
         elif self==cls.SMTPE_Offset:
             return OrderedDict(hh=_bytes[0],mm=_bytes[1],ss=_bytes[2],frame=_bytes[3]+0.01*_bytes[4])
         elif self==cls.Time_Signature:
@@ -58,23 +60,23 @@ class MetaEventKinds(SafeEnum):
         else:
             return OrderedDict()
 
-    
-    
-    
+
+
+
 class MetaEvent(Event):
-    
+
     def __init__(self,time,buffer):
         super().__init__(time, buffer)
         self.type=self.getInt(1)
         length, n=self.getVarLengthInt()
         self.data=self.getChunk(length)
         self.length=length+n+2
-        
+
         self.message = MetaEventKinds.make(self.type)
         if self.message:
             self.attributes = self.message.attributes(self.data)
- 
-    
+
+
     def __str__(self):
         if self.message:
             attrs = self.stringify([f'{k}={v}' for k,v in self.attributes.items()])
@@ -82,5 +84,5 @@ class MetaEvent(Event):
         else:
             data = self.stringify(self.data)
             return f'META@{self.time} {self.type} -> {data}'
-        
+
 
