@@ -3,38 +3,23 @@ Created on 16 Sep 2019
 
 @author: julianporter
 '''
-from MIDI.util import SafeEnum
+
 from .converters import ConversionEnum, Converter
-
-class SMTPEType(SafeEnum):
-    FPS24 = 0
-    FPS25 = 1
-    FPS30Drop = 2
-    FPS30 = 3
-
-    @property
-    def fps(self):
-        c = SMTPEType
-        return { c.FPS24 : 24, c.FPS25 : 25, c.FPS30Drop : 30, c.FPS30 : 30 }.get(self,30)
+from MIDI.timing import SMTPEType, TimeCodeMessages
 
 
-class TimeCodeMessages(SafeEnum):
 
-    Frame_Number_LSB = 0x00
-    Frame_Number_MSB = 0x10
-    Second_LSB = 0x20
-    Second_MSB = 0x30
-    Minute_LSB = 0x40
-    Minute_MSB = 0x50
-    Hour_LSB = 0x60
-    Rate_And_Hour_MSB = 0x70
+
+
+
+
 
 def TimeCode(data):
     x = data[0]
     value = x & 0x1f
     kind = TimeCodeMessages(x&0x70)
     if kind == TimeCodeMessages.Rate_And_Hour_MSB:
-        smtpe = SMTPEType((x>>5)&3)
+        smtpe = SMTPEType.make(x)
         return f'Type: Hour_MSB value: {value} SMTPE : {str(smtpe)}'
     else:
         return f'Type: {str(kind)} value: {value}'
