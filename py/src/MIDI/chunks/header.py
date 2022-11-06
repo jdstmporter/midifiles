@@ -37,9 +37,9 @@ class Division:
 
     def __str__(self):
         if self.smtpe is None:
-            return f'{self.mode.name} ticks = {self.ticks}  [raw : {self.division}]'
+            return f'{self.mode.name} @ {self.ticks} ticks per crotchet  [raw : {self.division}]'
         else:
-            return f'{self.mode.name} smtpe = {self.smtpe} ticks = {self.ticks}  [raw : {self.division}]'
+            return f'SMTPE {self.smtpe} @ {self.ticks} ticks per frame  [raw : {self.division}]'
 
 
 class Header(Chunk):
@@ -51,4 +51,4 @@ class Header(Chunk):
         self.division = Division(self.build(data[4:]))
 
     def __str__(self):
-        return f'Format {self.format} nTracks {self.nTracks} Timing {self.division}'
+        return f'Format {self.format} nTracks: {self.nTracks} Timing: {self.division}'

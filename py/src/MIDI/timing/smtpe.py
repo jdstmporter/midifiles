@@ -40,16 +40,23 @@ class SMTPEType(SafeEnum):
     def make(cls,value):
         return SMTPEType((value>>5)&3)
 
-class SMTPEInfo:
+    def __str__(self):
+        ns = [f'{self.fps} FPS']
+        if self == SMTPEType.FPS30Drop:
+            ns.append('drop frame')
+        return ' '.join(ns)
+
+class QuarterFrameMessage:
 
     def __init__(self,data):
         self.data = data[0]
-        self.value = self.data & 0x1f
         self.kind = TimeCodeMessages(self.data&0x70)
         if self.kind == TimeCodeMessages.Rate_And_Hour_MSB:
-            self.smtpe = SMTPEType.make(self.data)
+            self.smtpe = SMTPEType((self.data>>1) & 0x03)
+            self.value = self.data & 0x01
         else:
             self.smtpe = None
+            self.value = self.data & 0x0f
 
 
     def __str__(self):
@@ -57,3 +64,16 @@ class SMTPEInfo:
             return f'Type: {str(self.kind)} value: {self.value} SMTPE : {str(self.smtpe)}'
         else:
             return f'Type: {str(self.kind)} value: {self.value}'
+
+class FullTimingMessage:
+
+    def __init__(self,data):        # F0 7F 7F 01 01 <hr> <mn> <sc> <fr> F7
+        self.data=data[:4]
+        self.smtpe = SMTPEType((data[0]>>5)&0x03)
+        self.hours = data[0] & 0x1f
+        self.minutes = data[1]
+        self.seconds = data[2]
+        self.frames = data[3]
+
+    def __str__(self):
+        return f'Type: {str(self.smtpe)} @ {self.hours}:{self.minutes}:{self.seconds} + {self.frames} frames'
