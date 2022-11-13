@@ -5,16 +5,7 @@ Created on 30 Oct 2022
 '''
 from MIDI.util import SafeEnum
 
-class TimeCodeMessages(SafeEnum):
 
-    Frame_Number_LSB = 0x00
-    Frame_Number_MSB = 0x10
-    Second_LSB = 0x20
-    Second_MSB = 0x30
-    Minute_LSB = 0x40
-    Minute_MSB = 0x50
-    Hour_LSB = 0x60
-    Rate_And_Hour_MSB = 0x70
 
 class SMTPEType(SafeEnum):
     FPS24 = 0
@@ -46,34 +37,32 @@ class SMTPEType(SafeEnum):
             ns.append('drop frame')
         return ' '.join(ns)
 
-class QuarterFrameMessage:
+class FullTimingMessageKind(SafeEnum):
+    Full_Message = 1
+    User_Bits = 2
 
-    def __init__(self,data):
-        self.data = data[0]
-        self.kind = TimeCodeMessages(self.data&0x70)
-        if self.kind == TimeCodeMessages.Rate_And_Hour_MSB:
-            self.smtpe = SMTPEType((self.data>>1) & 0x03)
-            self.value = self.data & 0x01
-        else:
-            self.smtpe = None
-            self.value = self.data & 0x0f
-
-
-    def __str__(self):
-        if self.smtpe is not None:
-            return f'Type: {str(self.kind)} value: {self.value} SMTPE : {str(self.smtpe)}'
-        else:
-            return f'Type: {str(self.kind)} value: {self.value}'
+    @classmethod
+    def make(cls,value):
+        hits = [x for x in cls if x.value==value]
+        hits.append(None)
+        return hits[0]
 
 class FullTimingMessage:
 
     def __init__(self,data):        # F0 7F 7F 01 01 <hr> <mn> <sc> <fr> F7
-        self.data=data[:4]
-        self.smtpe = SMTPEType((data[0]>>5)&0x03)
-        self.hours = data[0] & 0x1f
-        self.minutes = data[1]
-        self.seconds = data[2]
-        self.frames = data[3]
+        self.kind = FullTimingMessageKind.make(data[0])
+        self.data=data[1:]
+        if self.kind == FullTimingMessageKind.Full_Message:
+            self.smtpe = SMTPEType((data[0]>>5)&0x03)
+            self.hours = data[0] & 0x1f
+            self.minutes = data[1]
+            self.seconds = data[2]
+            self.frames = data[3]
 
     def __str__(self):
-        return f'Type: {str(self.smtpe)} @ {self.hours}:{self.minutes}:{self.seconds} + {self.frames} frames'
+        if self.kind == FullTimingMessageKind.Full_Message:
+            return f'Full message: {str(self.smtpe)} @ {self.hours}:{self.minutes}:{self.seconds} + {self.frames} frames'
+        elif self.kind == FullTimingMessageKind.User_Bits:
+            return f'User bits: {self.data}'
+        else:
+            return 'Unknown timing message type'

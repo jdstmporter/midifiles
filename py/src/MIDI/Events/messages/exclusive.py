@@ -4,76 +4,72 @@ Created on 16 Sep 2019
 @author: julianporter
 '''
 
-from .converters import ConversionEnum, Converter
-from MIDI.timing import SMTPEType, TimeCodeMessages
+from .systemCommon import NullMessage, QuarterFrameMessage, SongPositionPointer, SongSelect
 
+from MIDI.util import SafeEnum
+from .sysex import SysEx
 
-
-
-
-
-
-
-def TimeCode(data):
-    x = data[0]
-    value = x & 0x1f
-    kind = TimeCodeMessages(x&0x70)
-    if kind == TimeCodeMessages.Rate_And_Hour_MSB:
-        smtpe = SMTPEType.make(x)
-        return f'Type: Hour_MSB value: {value} SMTPE : {str(smtpe)}'
-    else:
-        return f'Type: {str(kind)} value: {value}'
-
-
-
-
-
-class SystemMessages(ConversionEnum):
+class SystemKind(SafeEnum):
 
     Exclusive = 0
-    Time_Code_Quarter_Frame = (1,TimeCode)
-    Song_Position_Pointer = (2,Converter.Int16)
+    Time_Code_Quarter_Frame = 1
+    Song_Position_Pointer = 2
     Song_Select = 3
-    Tune_Request = (6,Converter.Null)
-    End_Of_Exclusive = (7,Converter.Null)
-    RT_Timing_Clock = (8,Converter.Null)
-    RT_Start = (10,Converter.Null)
-    RT_Continue = (11,Converter.Null)
-    RT_Stop = (12,Converter.Null)
-    RT_Active_Sensing = (14,Converter.Null)
-    RT_Reset = (15,Converter.Null)
+    Tune_Request = 6
+    End_Of_Exclusive = 7
+    RT_Timing_Clock = 8
+    RT_Start = 10
+    RT_Continue = 11
+    RT_Stop = 12
+    RT_Active_Sensing = 14
+    RT_Reset = 15
 
-    def length(self):
-        cls=self.__class__
-        if self == cls.Exclusive:
-            return None
-        elif self in [cls.Time_Code_Quarter_Frame,cls.Song_Select]:
-            return 1
-        elif self == cls.Song_Position_Pointer:
-            return 2
-        else:
-            return 0
+    @property
+    def isExclusive(self):
+        return self == SystemKind.Exclusive
 
-class SystemMessage(object):
+    @property
+    def isRT(self):
+        return self.value >= 8
+
+    def instance(self,data = []):
+        lookup = {
+            SystemKind.Exclusive : SysEx,
+            SystemKind.Time_Code_Quarter_Frame : QuarterFrameMessage,
+            SystemKind.Song_Position_Pointer : SongPositionPointer,
+            SystemKind.Song_Select : SongSelect
+        }
+        klass = lookup.get(self,NullMessage)
+        return klass(data)
+
+
+
+
+class SystemMessage:
 
     def __init__(self,data=b''):
 
-        command=SystemMessages.make(data[0]&15)
+        command=SystemKind.make(data[0]&15)
         if command:
             self.command=command
-            self.value=command(data[1:])
-            self.length=command.length or 0
+            self.data=command(data[1:])
+            self.message = self.command.instance(self.data)
+            self.length=len(self.message) or 0
         else:
             self.command=data[0]
             self.value=data[1:]
+            self.messsage=None
             self.length=len(data)-1
 
     def __len__(self):
         return self.length
 
     def __str__(self):
-        if self.value is not None:
-            return f'{str(self.command)} := {self.value}'
+        if self.message is not None:
+            return f'{str(self.command.name)} := {self.message}'
         else:
             return str(self.command)
+
+
+
 
