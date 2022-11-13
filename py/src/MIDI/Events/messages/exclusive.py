@@ -4,10 +4,11 @@ Created on 16 Sep 2019
 @author: julianporter
 '''
 
-from .systemCommon import NullMessage, QuarterFrameMessage, SongPositionPointer, SongSelect
+
+from MIDI.Events.system import NullMessage, QuarterFrameMessage, SongPositionPointer, SongSelect, SysEx
 
 from MIDI.util import SafeEnum
-from .sysex import SysEx
+
 
 class SystemKind(SafeEnum):
 

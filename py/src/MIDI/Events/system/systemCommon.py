@@ -4,26 +4,10 @@ Created on 12 Nov 2022
 @author: julianporter
 '''
 
-from .converters import Converter
+from .base import SystemMessageBase
 from MIDI.timing import SMTPEType
-from MIDI.util import SafeEnum
+from MIDI.util import SafeEnum, Converter
 
-class SystemMessageBase:
-
-    def __init__(self,data=b''):
-        pass
-
-    def __len__(self):
-        return 0
-
-    def __str__(self):
-        return ""
-
-
-class NullMessage(SystemMessageBase):
-
-    def __init__(self,data=b''):
-        pass
 
 class SongPositionPointer(SystemMessageBase):
 

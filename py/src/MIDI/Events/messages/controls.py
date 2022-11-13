@@ -5,7 +5,7 @@ Created on 16 Sep 2019
 '''
 
 
-from .converters import ConversionEnum, Converter
+from MIDI.util.converters import ConversionEnum, Converter
 
 
 def Pedals(data):
