@@ -23,6 +23,9 @@ def TruncatedString(data):
     else:
         return f'{data[:32]}... [{l-32} more]'
 
+def TruncatedStringHex(data):
+    return ' '.join([f'{d:02x}' for d in data[:48]])
+
 class ControlMessages(ConversionEnum):
     Bank_Select = 0
     Mod_Wheel = 1
