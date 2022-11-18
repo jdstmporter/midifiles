@@ -7,3 +7,5 @@ swift/
 __pycache__/
 
 py/data/test2.flp
+
+.metadata/
