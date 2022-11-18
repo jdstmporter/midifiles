@@ -5,51 +5,48 @@ Created on 15 Sep 2019
 '''
 
 from .chunk import Chunk
-from MIDI.Events import MetaEvent, MIDIEvent
+from .event import Event
 import traceback
-
+           
 
 class Track(Chunk):
-
-    def __init__(self,data,containsTiming = True):
+    
+    def __init__(self,data):
         super().__init__(data)
         self.events=[]
-        self.containsTiming = containsTiming
-
+           
     def parse(self):
         self.buffer=self.data
-        time=0 if self.containsTiming else None
-        self.buffer=self.buffer[8:]
+        #self.buffer=self.buffer[8:]
         try:
             while len(self.buffer)>0 :
                 #print(f'Parsing {len(self.buffer)} bytes')
-                if self.containsTiming:
-                    delta, _=self.getVarLengthInt()
-                    time+=delta
                 #print(f'Time is {time} length {n}')
-                eventType=self.buffer[0]
-                #print(f'Event type is {eventType}')
-                if eventType == 0xff:     # Meta event
-                    event = MetaEvent(time,self.buffer)
-                else:
-                    event = MIDIEvent(time,self.buffer)
+                #eventType=self.buffer[0]
+                #print(f'Next event type {eventType}')
+                event=Event(self.buffer)
+                #if eventType <192 :     
+                #    event = NumericEvent(self.buffer)
+                #else: # 
+                #    event = TextEvent(self.buffer)
                 length = len(event)
+                #print(f"Event type {hex(eventType)} is of kind {event.code}")
                 self.events.append(event)
                 self.buffer=self.buffer[length:]
-        except Exception:
-            #print(f'Error : {e}')
+        except Exception as e:
+            print(f'Error : {e}')
             traceback.print_exc()
             pass
-
+    
     def __iter__(self):
         return iter(self.events)
-
+        
     def __len__(self):
         return len(self.events)
-
+        
     def __getitem__(self,index):
         return self.events[index]
-
+    
     def __str__(self):
         return self.stringify(self.events, '\n')
-
+        

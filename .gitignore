@@ -7,5 +7,8 @@ swift/
 __pycache__/
 
 py/data/test2.flp
+/.metadata/
 
-.metadata/
+py/src/Trio.mid
+
+py/src/Trio.txt
