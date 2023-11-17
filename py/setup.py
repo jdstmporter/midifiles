@@ -13,7 +13,7 @@ def makePackage(prefix='',name='',keyword='',suffix='*'):
 
     setup(
         name=name,
-        version='0.2.0',
+        version='0.2.1',
         description=f'A simple {keyword} File parser',
         long_description=long_description,
         author='Julian Porter',

@@ -45,7 +45,7 @@ class Note(object):
 
     @property
     def number(self):
-        return self.note+self.octave*12
+        return self.notes.index(self.note)+self.octave*12
 
     def __str__(self):
         return f'{self.note.upper()}{self.octave}'
